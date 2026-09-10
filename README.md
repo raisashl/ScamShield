@@ -1,72 +1,61 @@
-# ScamShield
+# 🛡️ ScamShield
 
-A responsive, interactive scam and phishing risk analyzer designed as a portfolio-ready software engineering + AI/NLP project.
+**ScamShield** is an AI-powered scam and phishing risk detection application designed to identify suspicious messages, job offers, payment requests, URLs, and PDF documents.
 
-## What is included
+It combines **Machine Learning (NLP), rule-based scam detection, and URL analysis** to generate an easy-to-understand risk score.
 
-- `frontend/` — polished responsive React/Vite web app.
-- `backend/` — FastAPI API foundation for replacing the demo browser rules with a real ML/NLP model.
-- `docs/` — project documentation.
-- `plan.md` — implementation roadmap.
+---
 
-## Important architecture decision
+## 🚀 Live Demo
 
-The frontend works immediately with a browser-based demo analyzer, so the UI is not dependent on a local backend. The backend is included separately as the production/API layer. This makes the project easy to deploy as a static frontend first and then connect to an AI backend when the ML model is ready.
+### 🌐 Web Application
+https://scamshield-frontend-svau.onrender.com
 
-## Run the frontend locally for development
+### ⚙️ Backend API
+https://scamshield-1-hvt6.onrender.com
 
-Requirements: Node.js 18+
+### ❤️ API Health Check
+https://scamshield-1-hvt6.onrender.com/health
 
-```bash
-cd frontend
-npm install
-npm run dev
-```
+---
 
-For a production build:
+## ✨ Features
 
-```bash
-npm run build
-```
+- 🤖 AI/ML-based scam detection
+- 📊 Scam risk percentage
+- 🔐 OTP and password scam detection
+- 💰 Payment and registration-fee scam detection
+- 💼 Employment/job scam detection
+- 🎁 Prize and reward scam detection
+- ⚠️ Urgency and threat detection
+- 🔗 Suspicious URL analysis
+- 📄 PDF/document scam analysis
+- 🧠 Rule-based red-flag detection
+- 📱 Responsive design for mobile and desktop
+- 💾 Local analysis history
+- 📲 Progressive Web App (PWA) support
+- 🤖 Android app support through Capacitor
+- ☁️ Cloud-hosted FastAPI backend
 
-The generated `frontend/dist` folder can be deployed to Vercel, Netlify, Cloudflare Pages, GitHub Pages (with suitable routing), or another static hosting provider.
+---
 
-## Run the API
+## 🧠 How ScamShield Works
 
-Requirements: Python 3.10+
+ScamShield uses multiple layers of analysis.
 
-```bash
-cd backend
-python -m venv .venv
-```
-
-Windows:
-```bash
-.venv\\Scripts\\activate
-```
-
-macOS/Linux:
-```bash
-source .venv/bin/activate
-```
-
-```bash
-pip install -r requirements.txt
-uvicorn app.main:app --reload
-```
-
-The API exposes `/health` and `/analyze`.
-
-## Next AI upgrade
-
-Replace the simple rule engine with:
-1. A labeled scam/legitimate dataset.
-2. Text preprocessing.
-3. TF-IDF + Logistic Regression baseline.
-4. Evaluation with precision, recall and F1.
-5. Optional Transformer/BERT model.
-6. Combine ML probability + rule signals + URL features into the final risk score.
-
-## Deployment direction
-
-For a real online application, deploy the frontend to a static hosting platform and the FastAPI service to a cloud platform. Then configure the frontend API base URL through an environment variable. Do not put API keys or secrets in the frontend.
+```text
+User Input
+    ↓
+Text / URL / PDF
+    ↓
+Text Extraction
+    ↓
+TF-IDF NLP Model
+    ↓
+Rule-Based Scam Detection
+    ↓
+URL & Red-Flag Analysis
+    ↓
+Risk Score Calculation
+    ↓
+Scam / Legitimate Result
