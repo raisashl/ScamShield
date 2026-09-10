@@ -21,7 +21,7 @@ import {
 
 import './styles.css';
 
-const API_URL = 'http://10.1.30.204:8000';
+const API_URL = 'https://scamshield-1-hvt6.onrender.com';
 
 const HISTORY_KEY = 'scamshield_history';
 
