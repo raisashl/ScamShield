@@ -1,6 +1,6 @@
 # 🛡️ ScamShield
 
-**ScamShield** is an AI-powered scam and phishing risk detection application designed to identify suspicious messages, job offers, payment requests, URLs, and PDF documents.
+ScamShield is an AI-powered scam and phishing risk detection application designed to identify suspicious messages, job offers, payment requests, URLs, and PDF documents.
 
 It combines **Machine Learning (NLP), rule-based scam detection, and URL analysis** to generate an easy-to-understand risk score.
 
@@ -9,39 +9,42 @@ It combines **Machine Learning (NLP), rule-based scam detection, and URL analysi
 ## 🚀 Live Demo
 
 ### 🌐 Web Application
+
 https://scamshield-frontend-svau.onrender.com
 
 ### ⚙️ Backend API
+
 https://scamshield-1-hvt6.onrender.com
 
 ### ❤️ API Health Check
+
 https://scamshield-1-hvt6.onrender.com/health
 
 ---
 
 ## ✨ Features
 
-- 🤖 AI/ML-based scam detection
+- 🤖 Machine Learning-based scam detection
 - 📊 Scam risk percentage
 - 🔐 OTP and password scam detection
 - 💰 Payment and registration-fee scam detection
-- 💼 Employment/job scam detection
+- 💼 Employment and job scam detection
 - 🎁 Prize and reward scam detection
 - ⚠️ Urgency and threat detection
 - 🔗 Suspicious URL analysis
 - 📄 PDF/document scam analysis
 - 🧠 Rule-based red-flag detection
-- 📱 Responsive design for mobile and desktop
+- 📱 Responsive mobile and desktop interface
 - 💾 Local analysis history
 - 📲 Progressive Web App (PWA) support
-- 🤖 Android app support through Capacitor
+- 🍎 iOS-ready application using Capacitor
 - ☁️ Cloud-hosted FastAPI backend
 
 ---
 
 ## 🧠 How ScamShield Works
 
-ScamShield uses multiple layers of analysis.
+ScamShield uses multiple layers of analysis to evaluate suspicious content.
 
 ```text
 User Input
