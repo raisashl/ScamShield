@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
+import { Capacitor } from '@capacitor/core';
 
 import {
   ShieldCheck,
@@ -21,7 +22,7 @@ import {
 
 import './styles.css';
 
-const API_URL = 'https://scamshield-1-hvt6.onrender.com';
+const API_URL = 'https://scamshield-1-hvt6.onrender.com/';
 
 const HISTORY_KEY = 'scamshield_history';
 
@@ -39,7 +40,6 @@ const examples = [
     text: 'Hey, the meeting is moved to 4 PM. Please bring the project report.'
   }
 ];
-
 
 /* =========================================================
    FORMAT BACKEND RESULT
@@ -63,19 +63,9 @@ function formatResult(data) {
 
   let reasons = [];
 
-
-  /* -------------------------------------------------------
-     BACKEND PATTERNS
-  ------------------------------------------------------- */
-
   if (Array.isArray(data.patterns)) {
     reasons.push(...data.patterns);
   }
-
-
-  /* -------------------------------------------------------
-     SECTION FLAGS
-  ------------------------------------------------------- */
 
   if (Array.isArray(data.sections)) {
 
@@ -89,18 +79,11 @@ function formatResult(data) {
 
   }
 
-
-  /* -------------------------------------------------------
-     URL WARNINGS
-  ------------------------------------------------------- */
-
   let urlFlags = [];
-
 
   if (Array.isArray(data.url_flags)) {
     urlFlags.push(...data.url_flags);
   }
-
 
   if (Array.isArray(data.sections)) {
 
@@ -114,20 +97,9 @@ function formatResult(data) {
 
   }
 
-
   urlFlags = [...new Set(urlFlags)];
 
-
-  /* -------------------------------------------------------
-     REMOVE DUPLICATE REASONS
-  ------------------------------------------------------- */
-
   reasons = [...new Set(reasons)];
-
-
-  /* -------------------------------------------------------
-     FALLBACK REASONS
-  ------------------------------------------------------- */
 
   if (!reasons.length) {
 
@@ -153,11 +125,6 @@ function formatResult(data) {
 
   }
 
-
-  /* -------------------------------------------------------
-     SAFETY RECOMMENDATION
-  ------------------------------------------------------- */
-
   let safe;
 
   if (level === 'HIGH') {
@@ -177,7 +144,6 @@ function formatResult(data) {
 
   }
 
-
   return {
 
     score: Math.round(score * 100) / 100,
@@ -193,7 +159,6 @@ function formatResult(data) {
   };
 
 }
-
 
 /* =========================================================
    MAIN APP
@@ -215,12 +180,39 @@ function App() {
 
   const [error, setError] = useState('');
 
-
   const fileInputRef = useRef(null);
 
 
   /* =======================================================
-     LOAD HISTORY FROM BROWSER STORAGE
+     ANDROID SERVICE WORKER CLEANUP
+  ======================================================= */
+
+  useEffect(() => {
+
+    if (Capacitor.isNativePlatform()) {
+
+      navigator.serviceWorker?.getRegistrations()
+        .then((registrations) => {
+
+          registrations.forEach((registration) => {
+            registration.unregister();
+          });
+
+        })
+        .catch((err) => {
+          console.log(
+            'Service worker cleanup skipped:',
+            err
+          );
+        });
+
+    }
+
+  }, []);
+
+
+  /* =======================================================
+     LOAD HISTORY
   ======================================================= */
 
   useEffect(() => {
@@ -254,7 +246,7 @@ function App() {
 
 
   /* =======================================================
-     SAVE HISTORY TO BROWSER STORAGE
+     SAVE HISTORY
   ======================================================= */
 
   useEffect(() => {
@@ -279,7 +271,7 @@ function App() {
 
 
   /* -------------------------------------------------------
-     History statistics
+     HISTORY STATISTICS
   ------------------------------------------------------- */
 
   const stats = useMemo(
@@ -289,6 +281,7 @@ function App() {
       high: history.filter(
         (x) => x.level === 'HIGH'
       ).length
+
     }),
     [history]
   );
@@ -321,7 +314,6 @@ function App() {
 
     };
 
-
     setHistory((h) => [
 
       newEntry,
@@ -341,18 +333,16 @@ function App() {
 
     if (!input.trim() || loading) return;
 
-
     setLoading(true);
 
     setError('');
 
     setResult(null);
 
-
     try {
 
       const response = await fetch(
-        `${API_URL}/analyze`,
+        `${API_URL}analyze`,
         {
           method: 'POST',
 
@@ -396,11 +386,9 @@ function App() {
 
       console.error(err);
 
-
       setError(
-        'Could not connect to ScamShield backend. Make sure the FastAPI server is running on port 8000.'
+        'Could not connect to ScamShield backend. Please check your internet connection and try again.'
       );
-
 
     } finally {
 
@@ -419,7 +407,6 @@ function App() {
 
     const file =
       event.target.files?.[0];
-
 
     if (!file) return;
 
@@ -458,7 +445,7 @@ function App() {
 
       const response =
         await fetch(
-          `${API_URL}/analyze-pdf`,
+          `${API_URL}analyze-pdf`,
           {
             method: 'POST',
             body: formData
@@ -500,12 +487,10 @@ function App() {
 
       console.error(err);
 
-
       setError(
         err.message ||
         'Could not analyze the PDF.'
       );
-
 
     } finally {
 
@@ -563,12 +548,9 @@ function App() {
     <div className="app">
 
 
-      {/* =================================================
-          NAVIGATION
-      ================================================= */}
+      {/* NAVIGATION */}
 
       <nav className="nav">
-
 
         <div className="brand">
 
@@ -577,7 +559,6 @@ function App() {
             <ShieldCheck />
 
           </span>
-
 
           <span>
 
@@ -590,19 +571,15 @@ function App() {
 
         <div className="navlinks">
 
-
           <button
-
             className={
               tab === 'analyze'
                 ? 'active'
                 : ''
             }
-
             onClick={() =>
               setTab('analyze')
             }
-
           >
 
             Analyzer
@@ -611,23 +588,19 @@ function App() {
 
 
           <button
-
             className={
               tab === 'history'
                 ? 'active'
                 : ''
             }
-
             onClick={() =>
               setTab('history')
             }
-
           >
 
             History <b>{stats.scans}</b>
 
           </button>
-
 
         </div>
 
@@ -643,21 +616,16 @@ function App() {
       </nav>
 
 
-      {/* =================================================
-          ANALYZER TAB
-      ================================================= */}
+      {/* ANALYZER */}
 
       {tab === 'analyze' ? (
 
         <main>
 
 
-          {/* =============================================
-              HERO
-          ============================================= */}
+          {/* HERO */}
 
           <section className="hero">
-
 
             <div className="pill">
 
@@ -687,22 +655,16 @@ function App() {
           </section>
 
 
-          {/* =============================================
-              WORKSPACE
-          ============================================= */}
+          {/* WORKSPACE */}
 
           <section className="workspace">
 
 
-            {/* ===========================================
-                INPUT PANEL
-            =========================================== */}
+            {/* INPUT PANEL */}
 
             <div className="panel inputpanel">
 
-
               <div className="panelhead">
-
 
                 <div>
 
@@ -729,7 +691,6 @@ function App() {
               {/* TEXT INPUT */}
 
               <div className="inputwrap">
-
 
                 <textarea
 
@@ -764,7 +725,6 @@ function App() {
               {/* EXAMPLES */}
 
               <div className="examples">
-
 
                 <span>
                   Try an example:
@@ -809,18 +769,16 @@ function App() {
 
                 <ScanSearch size={19} />
 
-
                 {loading
                   ? 'Analyzing...'
                   : 'Analyze risk'}
-
 
                 <ArrowRight size={18} />
 
               </button>
 
 
-              {/* HIDDEN PDF INPUT */}
+              {/* PDF INPUT */}
 
               <input
 
@@ -855,24 +813,20 @@ function App() {
 
                 <Upload size={19} />
 
-
                 {loading
                   ? 'Processing...'
                   : 'Analyze PDF'}
-
 
                 <FileText size={18} />
 
               </button>
 
 
-              {/* PRIVACY MESSAGE */}
+              {/* PRIVACY */}
 
               <p className="micro">
 
-
                 <LockKeyhole size={13} />
-
 
                 Messages and documents are
                 analyzed by the ScamShield backend.
@@ -901,15 +855,11 @@ function App() {
             </div>
 
 
-            {/* ===========================================
-                RESULT PANEL
-            =========================================== */}
+            {/* RESULT PANEL */}
 
             <div className="panel resultpanel">
 
-
               <div className="panelhead">
-
 
                 <div>
 
@@ -957,9 +907,7 @@ function App() {
               </div>
 
 
-              {/* =================================================
-                  RESULT CONTENT
-              ================================================= */}
+              {/* RESULT CONTENT */}
 
               {loading ? (
 
@@ -1005,7 +953,6 @@ function App() {
 
                 <div className="empty">
 
-
                   <div className="emptyicon">
 
                     <ShieldCheck
@@ -1044,22 +991,17 @@ function App() {
           </section>
 
 
-          {/* =================================================
-              TRUST SECTION
-          ================================================= */}
+          {/* TRUST */}
 
           <section className="trust">
-
 
             <div>
 
               <CheckCircle2 />
 
-
               <strong>
                 Designed for awareness
               </strong>
-
 
               <span>
 
@@ -1077,7 +1019,6 @@ function App() {
 
               How it works
 
-
               <ArrowRight
                 size={15}
               />
@@ -1087,22 +1028,18 @@ function App() {
           </section>
 
 
-          {/* =================================================
-              HOW IT WORKS
-          ================================================= */}
+          {/* HOW IT WORKS */}
 
           <section
             id="how"
             className="how"
           >
 
-
             <div>
 
               <small>
                 HOW IT WORKS
               </small>
-
 
               <h2>
                 ML + three safety checks.
@@ -1114,22 +1051,17 @@ function App() {
             <div className="steps">
 
 
-              {/* STEP 1 */}
-
               <article>
 
                 <span>
                   01
                 </span>
 
-
                 <ScanSearch />
-
 
                 <h3>
                   Analyze signals
                 </h3>
-
 
                 <p>
 
@@ -1143,22 +1075,17 @@ function App() {
               </article>
 
 
-              {/* STEP 2 */}
-
               <article>
 
                 <span>
                   02
                 </span>
 
-
                 <AlertTriangle />
-
 
                 <h3>
                   Score risk
                 </h3>
-
 
                 <p>
 
@@ -1171,22 +1098,17 @@ function App() {
               </article>
 
 
-              {/* STEP 3 */}
-
               <article>
 
                 <span>
                   03
                 </span>
 
-
                 <ShieldCheck />
-
 
                 <h3>
                   Act safely
                 </h3>
-
 
                 <p>
 
@@ -1219,17 +1141,13 @@ function App() {
       )}
 
 
-      {/* =================================================
-          FOOTER
-      ================================================= */}
+      {/* FOOTER */}
 
       <footer>
-
 
         <span>
           © 2026 ScamShield
         </span>
-
 
         <span>
 
@@ -1258,21 +1176,13 @@ function Result({ result }) {
     <div className="result">
 
 
-      {/* =================================================
-          RISK HEADER
-      ================================================= */}
-
       <div className="riskrow">
 
-
         <div
-
           className={`riskbadge ${result.level.toLowerCase()}`}
-
         >
 
           <span className="dot"></span>
-
 
           {result.level}
 
@@ -1294,29 +1204,18 @@ function Result({ result }) {
       </div>
 
 
-      {/* =================================================
-          RISK METER
-      ================================================= */}
-
       <div className="meter">
 
         <span
-
           style={{
             width: `${result.score}%`
           }}
-
         ></span>
 
       </div>
 
 
-      {/* =================================================
-          WHY FLAGGED
-      ================================================= */}
-
       <div className="resultsection">
-
 
         <div className="sectiontitle">
 
@@ -1350,14 +1249,9 @@ function Result({ result }) {
       </div>
 
 
-      {/* =================================================
-          URL ANALYSIS
-      ================================================= */}
-
       {result.urlFlags?.length > 0 && (
 
         <div className="resultsection urlanalysis">
-
 
           <div className="sectiontitle">
 
@@ -1393,24 +1287,17 @@ function Result({ result }) {
       )}
 
 
-      {/* =================================================
-          RECOMMENDED ACTION
-      ================================================= */}
-
       <div className="advice">
-
 
         <ShieldCheck
           size={20}
         />
-
 
         <div>
 
           <strong>
             Recommended action
           </strong>
-
 
           <p>
             {result.safe}
@@ -1421,17 +1308,11 @@ function Result({ result }) {
       </div>
 
 
-      {/* =================================================
-          SAFETY INFORMATION
-      ================================================= */}
-
       <div className="verify">
-
 
         <Info
           size={16}
         />
-
 
         <span>
 
@@ -1441,7 +1322,6 @@ function Result({ result }) {
           or website yourself.
 
         </span>
-
 
         <ExternalLink
           size={14}
@@ -1470,12 +1350,7 @@ function HistoryView({
     <main className="historypage">
 
 
-      {/* =================================================
-          HISTORY HERO
-      ================================================= */}
-
       <div className="hero compact">
-
 
         <div className="pill">
 
@@ -1503,14 +1378,9 @@ function HistoryView({
       </div>
 
 
-      {/* =================================================
-          HISTORY LIST
-      ================================================= */}
-
       {history.length ? (
 
         <div className="historylist">
-
 
           {history.map(
             (x, i) => (
@@ -1523,11 +1393,8 @@ function HistoryView({
 
               >
 
-
                 <div
-
                   className={`mini ${x.level.toLowerCase()}`}
-
                 >
 
                   {x.level[0]}
@@ -1536,7 +1403,6 @@ function HistoryView({
 
 
                 <div className="htext">
-
 
                   <strong>
 
@@ -1576,18 +1442,11 @@ function HistoryView({
 
       ) : (
 
-
-        /* =================================================
-           EMPTY HISTORY
-        ================================================= */
-
         <div className="empty historyempty">
-
 
           <History
             size={35}
           />
-
 
           <h3>
             No scans yet

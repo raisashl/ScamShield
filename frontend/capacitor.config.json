@@ -1,5 +1,5 @@
 {
-  "appId": "com.example.app",
-  "appName": "scamshield",
+  "appId": "com.scamshield.app",
+  "appName": "ScamShield",
   "webDir": "dist"
 }
